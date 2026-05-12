@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BuddyNote 鉄の掟・達成管理板</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --wb-base: #e5e1d5; 
+            --ink-black: #0a0a0a; 
+            --ink-red: #8b0000;   
+            --ink-blue: #001a33;  
+        }
+
+        body {
+            background-color: #020617;
+            font-family: 'Yuji Syuku', serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding: 10px;
+        }
+
+        .whiteboard-frame {
+            background: #334155; 
+            padding: 10px;
+            border: 4px solid #1e293b;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.8);
+            width: 100%;
+            max-width: 1200px;
+            box-sizing: border-box;
+        }
+
+        .whiteboard-surface {
+            background: var(--wb-base);
+            border: 2px solid #64748b;
+            padding: 20px;
+            position: relative;
+            min-height: 1200px;
+            background-image: 
+                linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        .header-grid {
+            display: grid;
+            grid-template-columns: 240px 1fr 240px;
+            gap: 15px;
+            margin-bottom: 20px;
+            border-bottom: 5px solid var(--ink-black);
+            padding-bottom: 20px;
+            align-items: center;
+        }
+
+        .highlight-box {
+            border: 5px solid var(--ink-black);
+            background: #fff;
+            padding: 10px;
+            text-align: center;
+            box-shadow: 6px 6px 0 var(--ink-black);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 160px;
+        }
+
+        .total-display {
+            border-color: var(--ink-blue);
+            color: var(--ink-blue);
+            box-shadow: 6px 6px 0 var(--ink-blue);
+            transform: rotate(-1deg);
+        }
+
+        #total-sales {
+            font-size: 4.5rem;
+            font-weight: 900;
+            line-height: 1;
+            margin-top: 5px;
+        }
+
+        .deadline-box {
+            border-color: var(--ink-red);
+            color: var(--ink-red);
+            box-shadow: 6px 6px 0 var(--ink-red);
+            background: #fffafa;
+        }
+
+        #days-left {
+            font-size: 6rem;
+            font-weight: 900;
+            line-height: 1;
+            display: inline-block;
+        }
+
+        .title-container {
+            text-align: center;
+            padding: 0 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .voice-button {
+            background: var(--ink-red);
+            color: white;
+            padding: 8px 16px;
+            border: 4px solid #000;
+            cursor: pointer;
+            font-size: 1.4rem;
+            font-weight: 900;
+            box-shadow: 4px 4px 0 #000;
+            margin-bottom: 10px;
+            width: auto;
+            transition: all 0.1s;
+        }
+
+        .main-brand {
+            font-size: 3.2rem;
+            border-bottom: 6px double var(--ink-black);
+            display: inline-block;
+            margin-bottom: 5px;
+            font-weight: 900;
+            line-height: 1.1;
+        }
+
+        .sub-title {
+            font-size: 1.6rem;
+            display: block;
+            font-weight: 900;
+        }
+
+        .kiai-slogan-container {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .kiai-slogan {
+            background: #fff;
+            border: 4px solid var(--ink-red);
+            padding: 5px 25px;
+            color: var(--ink-red);
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: 0.2em;
+            box-shadow: 4px 4px 0 var(--ink-black);
+            transform: skew(-5deg);
+            position: relative;
+            line-height: 1.2;
+        }
+
+        .kiai-slogan.second-row {
+            font-size: 2.8rem;
+            padding: 8px 40px;
+            background: var(--ink-red);
+            color: #fff;
+            letter-spacing: 0.4em;
+            transform: skew(5deg);
+        }
+
+        .graph-area {
+            margin: 50px 40px 20px 80px;
+        }
+
+        .graph-container {
+            display: flex;
+            align-items: flex-end;
+            height: 320px;
+            border-left: 8px solid var(--ink-black);
+            border-bottom: 8px solid var(--ink-black);
+            position: relative;
+        }
+
+        .y-axis-labels {
+            position: absolute;
+            left: -70px;
+            height: 100%;
+            display: flex;
+            flex-direction: column-reverse;
+            justify-content: space-between;
+            font-size: 1.2rem;
+            font-weight: 900;
+            width: 60px;
+            text-align: right;
+            color: var(--ink-black);
+            padding-bottom: 5px;
+        }
+
+        .bar {
+            flex: 1;
+            margin: 0 8px;
+            border: 3px solid var(--ink-red);
+            background: repeating-linear-gradient(45deg, rgba(139,0,0,0.1), rgba(139,0,0,0.1) 10px, rgba(139,0,0,0.2) 10px, rgba(139,0,0,0.2) 20px);
+            position: relative;
+            transition: height 0.6s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+        }
+
+        .bar::after {
+            content: attr(data-value);
+            position: absolute;
+            top: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--ink-red);
+            font-size: 1.6rem;
+            font-weight: 900;
+        }
+
+        .x-axis-labels {
+            display: flex;
+            margin-left: 80px;
+            margin-right: 40px;
+            margin-top: 10px;
+            justify-content: space-around;
+            align-items: flex-start;
+        }
+
+        .name-tag {
+            background: var(--ink-blue);
+            color: #fff;
+            padding: 8px 10px; /* 余白を増やして文字を包む */
+            font-size: 1.2rem;
+            font-weight: 900;
+            text-align: center;
+            min-width: 60px; /* 最小幅を設定 */
+            max-width: 120px; /* あまり広がりすぎないよう上限を設定 */
+            border: 2px solid #000;
+            white-space: normal; /* 折り返しを許可して...を防ぐ */
+            word-break: break-all;
+            line-height: 1.1;
+            flex: 1;
+            margin: 0 4px;
+        }
+
+        .motto-panel {
+            margin: 30px 10px;
+            padding: 20px;
+            border: 4px solid var(--ink-black);
+            background: rgba(255,255,255,0.4);
+            position: relative;
+        }
+
+        .motto-panel h4 {
+            position: absolute;
+            top: -18px;
+            left: 20px;
+            background: var(--ink-black);
+            color: #fff;
+            padding: 2px 12px;
+            font-size: 1.2rem;
+        }
+
+        .motto-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px 20px;
+            font-size: 1.2rem;
+            font-weight: 900;
+        }
+
+        .stamp {
+            position: absolute;
+            width: 140px;
+            height: 140px;
+            border: 6px double var(--ink-red);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--ink-red);
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: rgba(255,255,255,0.7);
+            cursor: move;
+            z-index: 50;
+            user-select: none;
+        }
+
+        .controls-panel {
+            margin-top: 20px;
+            padding: 20px;
+            background: #0f172a;
+            border: 2px solid #334155;
+            box-sizing: border-box;
+        }
+
+        .control-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="whiteboard-frame">
+        <div class="whiteboard-surface" id="wb-surface">
+            <div class="header-grid">
+                <div class="flex flex-col gap-4">
+                    <div class="highlight-box">
+                        <span class="text-lg font-black">全体目標</span>
+                        <span id="quota-display" class="text-4xl text-red-800 font-black">350</span>
+                    </div>
+                    <div class="highlight-box total-display">
+                        <span class="text-lg font-black">現在の戦績</span>
+                        <span id="total-sales">0</span>
+                    </div>
+                </div>
+
+                <div class="title-container">
+                    <button id="voice-trigger" class="voice-button" onclick="playMotto()">
+                        📢 全員起立！唱和ッ！！
+                    </button>
+                    <div class="mb-1">
+                        <span class="main-brand">「BuddyNote」</span><br>
+                        <span class="sub-title">全国制覇・死守完遂月間</span>
+                    </div>
+                    <div class="kiai-slogan-container">
+                        <div class="kiai-slogan">気合！根性！</div>
+                        <div class="kiai-slogan second-row">製品愛！！</div>
+                    </div>
+                </div>
+
+                <div class="highlight-box deadline-box">
+                    <div class="text-xl font-black mb-1">決戦まで</div>
+                    <div class="text-lg font-black">残り</div>
+                    <div>
+                        <span id="days-left">--</span><span class="text-2xl ml-1">日</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="graph-area">
+                <div class="graph-container">
+                    <div class="y-axis-labels" id="y-labels"></div>
+                    <div id="bars-wrapper" class="flex items-end w-full h-full px-2"></div>
+                </div>
+            </div>
+
+            <div class="x-axis-labels" id="names-wrapper"></div>
+
+            <div class="motto-panel">
+                <h4>昭和魂・営業指針（絶叫唱和）</h4>
+                <div class="motto-list">
+                    <div>・実力の差は努力の差！</div>
+                    <div>・実績の差は責任感の差！</div>
+                    <div>・人格の差は苦労の差！</div>
+                    <div>・判断力の差は情報の差！</div>
+                    <div>・真剣だと知恵が出る！</div>
+                    <div>・中途半端だと愚痴が出る！</div>
+                    <div>・いい加減だと言い訳ばかり！</div>
+                    <div>・本気でするから大抵ことはできる！</div>
+                    <div>・本気でするから何でも面白い！</div>
+                    <div>・本気でしているから助けがある！</div>
+                </div>
+            </div>
+
+            <div id="stamps-layer"></div>
+        </div>
+
+        <div class="controls-panel text-white">
+            <h3 class="text-2xl font-black mb-6 border-l-8 border-red-700 pl-4 uppercase">実績入力・作戦司令部</h3>
+            <div class="bg-red-900/20 p-4 rounded mb-6 flex items-center gap-4 border border-red-800">
+                <label class="font-black text-lg">目標設定：</label>
+                <input type="number" id="quota-input" class="w-32 text-black p-1 text-xl font-bold" oninput="updateTotalQuota(this.value)">
+            </div>
+            <div class="control-grid" id="inputs-container"></div>
+        </div>
+    </div>
+
+    <script>
+        const MOTTO_PHRASES = [
+            "気合！根性！",
+            "製品愛！！",
+            "実力の差は、努力の差ァ！！",
+            "実績の差は、責任感の差ァ！！",
+            "人格の差は、苦労の差ァ！！",
+            "判断力の差は、情報の差ァ！！",
+            "真剣だと、知恵が出るゥ！！",
+            "中途半端だと、愚痴が出るゥ！！",
+            "いい加減だと、言い訳ばかりィ！！",
+            "本気でするから、大抵ことはできるゥ！！",
+            "本気でするから、何でも面白いィ！！",
+            "本気でしているから、誰かが助けてくれるゥ！！"
+        ];
+
+        let state = {
+            totalQuota: 350,
+            members: [
+                { name: "EC", sales: 120 },
+                { name: "萩原", sales: 85 },
+                { name: "鈴木", sales: 45 },
+                { name: "佐藤", sales: 30 },
+                { name: "部長", sales: 15 },
+                { name: "杉浦", sales: 50 },
+                { name: "新人", sales: 5 },
+                { name: "あまぞん", sales: 90 }
+            ],
+            stamps: [
+                { id: 'gokuhi', text: '極秘', color: '#8b0000', top: 220, left: 950, rotate: -15 },
+                { id: 'hisshoku', text: '必達', color: '#001a33', top: 480, left: 1000, rotate: 10 }
+            ]
+        };
+
+        const STORAGE_KEY = 'buddynote_manvoice_v6';
+        let activeUtterances = [];
+
+        function loadData() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try { state = { ...state, ...JSON.parse(saved) }; } catch (e) {}
+            }
+        }
+        function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+        function playMotto() {
+            if (window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+                activeUtterances = [];
+                resetVoiceButton();
+                return;
+            }
+
+            const btn = document.getElementById('voice-trigger');
+            btn.innerText = "🔥 腹から声を出せッ！！";
+            btn.style.background = "#000";
+
+            const voices = window.speechSynthesis.getVoices();
+            const maleVoice = voices.find(v => v.lang === 'ja-JP' && (v.name.includes('Male') || v.name.includes('Ichiro') || v.name.includes('Google 日本語')));
+
+            let currentIndex = 0;
+            function speakNext() {
+                if (currentIndex >= MOTTO_PHRASES.length) { resetVoiceButton(); return; }
+                const uttr = new SpeechSynthesisUtterance(MOTTO_PHRASES[currentIndex]);
+                uttr.lang = 'ja-JP';
+                if (maleVoice) uttr.voice = maleVoice;
+                
+                uttr.pitch = 0.2; 
+                uttr.rate = 1.7; 
+                
+                uttr.onend = () => { currentIndex++; setTimeout(speakNext, 150); };
+                activeUtterances.push(uttr);
+                window.speechSynthesis.speak(uttr);
+            }
+            speakNext();
+        }
+
+        window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
+
+        function resetVoiceButton() {
+            const btn = document.getElementById('voice-trigger');
+            btn.innerText = "📢 全員起立！唱和ッ！！";
+            btn.style.background = "var(--ink-red)";
+        }
+
+        function renderStamps() {
+            const layer = document.getElementById('stamps-layer');
+            layer.innerHTML = '';
+            state.stamps.forEach((s) => {
+                const el = document.createElement('div');
+                el.className = 'stamp';
+                el.innerText = s.text;
+                el.style.borderColor = s.color;
+                el.style.color = s.color;
+                el.style.top = s.top + 'px';
+                el.style.left = s.left + 'px';
+                el.style.transform = `rotate(${s.rotate}deg)`;
+                
+                let isDragging = false;
+                let startX, startY;
+
+                const start = (e) => {
+                    isDragging = true;
+                    const cX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+                    const cY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+                    startX = cX - s.left;
+                    startY = cY - s.top;
+                    el.style.zIndex = 1000;
+                };
+                const move = (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    const cX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+                    const cY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+                    s.left = cX - startX;
+                    s.top = cY - startY;
+                    el.style.left = s.left + 'px';
+                    el.style.top = s.top + 'px';
+                };
+                const stop = () => { if (isDragging) { isDragging = false; el.style.zIndex = 50; saveData(); } };
+
+                el.addEventListener('mousedown', start);
+                el.addEventListener('touchstart', start, { passive: false });
+                window.addEventListener('mousemove', move);
+                window.addEventListener('touchmove', move, { passive: false });
+                window.addEventListener('mouseup', stop);
+                window.addEventListener('touchend', stop);
+                layer.appendChild(el);
+            });
+        }
+
+        function renderBoard(rebuildInputs = true) {
+            const highestSales = Math.max(...state.members.map(m => m.sales), 100);
+            const currentMax = Math.ceil((highestSales + 50) / 100) * 100;
+            
+            const yContainer = document.getElementById('y-labels');
+            yContainer.innerHTML = '';
+            for (let i = 0; i <= 5; i++) {
+                const span = document.createElement('span');
+                span.innerText = Math.round((currentMax / 5) * i);
+                yContainer.appendChild(span);
+            }
+            
+            const barsWrapper = document.getElementById('bars-wrapper');
+            const namesWrapper = document.getElementById('names-wrapper');
+            const inputsContainer = document.getElementById('inputs-container');
+            
+            barsWrapper.innerHTML = '';
+            namesWrapper.innerHTML = '';
+            if (rebuildInputs) inputsContainer.innerHTML = '';
+            
+            let total = 0;
+            document.getElementById('quota-display').innerText = state.totalQuota;
+
+            state.members.forEach((m, i) => {
+                total += m.sales;
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.height = `${(m.sales / currentMax) * 100}%`;
+                bar.setAttribute('data-value', m.sales);
+                barsWrapper.appendChild(bar);
+
+                const tag = document.createElement('div');
+                tag.className = 'name-tag';
+                tag.innerText = m.name;
+                namesWrapper.appendChild(tag);
+
+                if (rebuildInputs) {
+                    const group = document.createElement('div');
+                    group.className = 'bg-slate-800 p-3 border border-slate-600 relative';
+                    group.innerHTML = `
+                        <span class="absolute top-1 right-2 text-red-500 cursor-pointer font-black text-lg" onclick="deleteMember(${i})">✕</span>
+                        <input type="text" class="w-full mb-1 p-1 text-black font-bold" value="${m.name}" oninput="updateMemberName(${i}, this.value)">
+                        <input type="number" class="w-full p-1 text-red-800 font-bold text-xl" value="${m.sales}" oninput="updateMemberSales(${i}, this.value)">
+                    `;
+                    inputsContainer.appendChild(group);
+                }
+            });
+
+            if (rebuildInputs) {
+                const addBtn = document.createElement('div');
+                addBtn.className = 'bg-red-800 p-4 border-2 border-white text-center cursor-pointer font-black hover:bg-red-700 flex items-center justify-center';
+                addBtn.innerHTML = '＋ 兵員追加';
+                addBtn.onclick = addMember;
+                inputsContainer.appendChild(addBtn);
+            }
+            document.getElementById('total-sales').innerText = total;
+        }
+
+        function updateTotalQuota(v) { state.totalQuota = parseInt(v) || 0; saveData(); renderBoard(false); }
+        function updateMemberName(i, v) { state.members[i].name = v; saveData(); renderBoard(false); }
+        function updateMemberSales(i, v) { state.members[i].sales = parseInt(v) || 0; saveData(); renderBoard(false); }
+        function addMember() { state.members.push({ name: "新兵", sales: 0 }); saveData(); renderBoard(true); }
+        function deleteMember(i) { state.members.splice(i, 1); saveData(); renderBoard(true); }
+        
+        function updateCountdown() {
+            const now = new Date();
+            let deadline = new Date(now.getFullYear(), 5, 30, 23, 59, 59);
+            const days = Math.ceil((deadline - now) / (1000 * 60 * 60 * 24));
+            document.getElementById('days-left').innerText = days > 0 ? days : 0;
+        }
+
+        window.onload = () => {
+            loadData();
+            updateCountdown();
+            renderBoard(true);
+            renderStamps();
+        };
+    </script>
+</body>
+</html>

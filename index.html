@@ -3,205 +3,223 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BuddyNote 鉄の掟・達成管理板</title>
+    <title>BuddyNote 強化月間管理板</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&family=DotGothic16&display=swap" rel="stylesheet">
     <style>
         :root {
-            --wb-base: #e5e1d5; 
-            --ink-black: #0a0a0a; 
-            --ink-red: #8b0000;   
-            --ink-blue: #001a33;  
+            --wb-white: #fcfcfc;
+            --wb-border: #444;
+            --marker-red: #d0021b;
+            --marker-blue: #004a99;
+            --marker-black: #1a1a1a;
         }
 
         body {
-            background-color: #020617;
+            background-color: #1a202c;
             font-family: 'Yuji Syuku', serif;
             display: flex;
             justify-content: center;
             align-items: flex-start;
             min-height: 100vh;
             margin: 0;
-            padding: 10px;
+            padding: 20px;
         }
 
         .whiteboard-frame {
-            background: #334155; 
-            padding: 10px;
-            border: 4px solid #1e293b;
-            box-shadow: 0 40px 80px rgba(0,0,0,0.8);
+            background: linear-gradient(180deg, #cbd5e0 0%, #a0aec0 100%);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.8), inset 0 2px 5px rgba(255,255,255,0.5);
+            border: 4px solid #718096;
             width: 100%;
             max-width: 1200px;
-            box-sizing: border-box;
+            position: relative;
         }
 
         .whiteboard-surface {
-            background: var(--wb-base);
-            border: 2px solid #64748b;
+            background: var(--wb-white);
+            border: 2px solid #4a5568;
             padding: 20px;
             position: relative;
-            min-height: 1200px;
+            min-height: 900px;
             background-image: 
-                linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
+                linear-gradient(rgba(226, 232, 240, 0.2) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(226, 232, 240, 0.2) 1px, transparent 1px);
             background-size: 40px 40px;
             overflow: hidden;
-            box-sizing: border-box;
         }
 
         .header-grid {
             display: grid;
-            grid-template-columns: 240px 1fr 240px;
+            grid-template-columns: 220px 1fr 240px;
             gap: 15px;
-            margin-bottom: 20px;
-            border-bottom: 5px solid var(--ink-black);
-            padding-bottom: 20px;
+            margin-bottom: 30px;
             align-items: center;
         }
 
-        .highlight-box {
-            border: 5px solid var(--ink-black);
-            background: #fff;
-            padding: 10px;
-            text-align: center;
-            box-shadow: 6px 6px 0 var(--ink-black);
+        .info-panel {
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            min-height: 160px;
+            gap: 12px;
+        }
+
+        .info-box {
+            border: 2px solid var(--marker-black);
+            padding: 8px 12px;
+            background: white;
+            font-family: 'DotGothic16', sans-serif;
+            font-size: 1.1rem;
+            box-shadow: 2px 2px 0 #ccc;
         }
 
         .total-display {
-            border-color: var(--ink-blue);
-            color: var(--ink-blue);
-            box-shadow: 6px 6px 0 var(--ink-blue);
+            border: 3px solid var(--marker-blue);
+            padding: 12px;
+            background: white;
+            color: var(--marker-blue);
+            font-size: 1.6rem;
+            font-weight: bold;
             transform: rotate(-1deg);
-        }
-
-        #total-sales {
-            font-size: 4.5rem;
-            font-weight: 900;
-            line-height: 1;
-            margin-top: 5px;
-        }
-
-        .deadline-box {
-            border-color: var(--ink-red);
-            color: var(--ink-red);
-            box-shadow: 6px 6px 0 var(--ink-red);
-            background: #fffafa;
-        }
-
-        #days-left {
-            font-size: 6rem;
-            font-weight: 900;
-            line-height: 1;
-            display: inline-block;
+            box-shadow: 4px 4px 0 rgba(0,74,153,0.1);
+            text-align: center;
         }
 
         .title-container {
             text-align: center;
             padding: 0 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            position: relative;
+        }
+
+        .header-title {
+            font-size: 2.5rem;
+            display: inline-block;
+            line-height: 1.2;
+            color: var(--marker-black);
+            margin-bottom: 5px;
+        }
+        
+        .header-title span {
+            border-bottom: 5px double var(--marker-black);
+            display: inline-block;
+            padding-bottom: 2px;
+        }
+
+        .motivation-text {
+            color: var(--marker-red);
+            font-size: 2.2rem;
+            margin-top: 5px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+            letter-spacing: 0.05em;
+            font-weight: 900;
+            white-space: nowrap;
         }
 
         .voice-button {
-            background: var(--ink-red);
+            position: absolute;
+            top: 0;
+            right: -100px;
+            background: var(--marker-red);
             color: white;
-            padding: 8px 16px;
-            border: 4px solid #000;
+            padding: 10px 15px;
+            border-radius: 50px;
             cursor: pointer;
-            font-size: 1.4rem;
-            font-weight: 900;
-            box-shadow: 4px 4px 0 #000;
-            margin-bottom: 10px;
-            width: auto;
+            font-weight: bold;
+            box-shadow: 0 4px 0 #900;
             transition: all 0.1s;
-        }
-
-        .main-brand {
-            font-size: 3.2rem;
-            border-bottom: 6px double var(--ink-black);
-            display: inline-block;
-            margin-bottom: 5px;
-            font-weight: 900;
-            line-height: 1.1;
-        }
-
-        .sub-title {
-            font-size: 1.6rem;
-            display: block;
-            font-weight: 900;
-        }
-
-        .kiai-slogan-container {
-            margin-top: 10px;
             display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
+            z-index: 50;
+        }
+        .voice-button:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+        .voice-button.loading {
+            opacity: 0.7;
+            cursor: wait;
         }
 
-        .kiai-slogan {
-            background: #fff;
-            border: 4px solid var(--ink-red);
-            padding: 5px 25px;
-            color: var(--ink-red);
-            font-size: 2.2rem;
-            font-weight: 900;
-            letter-spacing: 0.2em;
-            box-shadow: 4px 4px 0 var(--ink-black);
-            transform: skew(-5deg);
-            position: relative;
+        .deadline-box {
+            border: 4px solid var(--marker-red);
+            padding: 10px;
+            color: var(--marker-red);
+            transform: rotate(1deg);
+            background: white;
+            text-align: center;
+            box-shadow: 3px 3px 0 rgba(208,2,27,0.1);
+            width: 100%;
+            max-width: 230px;
+            justify-self: end;
+        }
+
+        .deadline-box .label {
+            font-size: 1rem;
+            font-weight: bold;
             line-height: 1.2;
         }
 
-        .kiai-slogan.second-row {
-            font-size: 2.8rem;
-            padding: 8px 40px;
-            background: var(--ink-red);
-            color: #fff;
-            letter-spacing: 0.4em;
-            transform: skew(5deg);
+        .deadline-box .days-count {
+            font-size: 2.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            line-height: 1;
+            font-family: 'DotGothic16', sans-serif;
+        }
+
+        .deadline-box .unit {
+            font-size: 1.2rem;
+            margin-left: 5px;
         }
 
         .graph-area {
-            margin: 50px 40px 20px 80px;
+            margin-top: 50px;
+            margin-left: 80px;
+            margin-right: 40px;
+            position: relative;
         }
 
         .graph-container {
             display: flex;
             align-items: flex-end;
-            height: 320px;
-            border-left: 8px solid var(--ink-black);
-            border-bottom: 8px solid var(--ink-black);
+            height: 380px;
+            border-left: 5px solid var(--marker-black);
+            border-bottom: 5px solid var(--marker-black);
+            background: rgba(0,0,0,0.01);
             position: relative;
         }
 
         .y-axis-labels {
             position: absolute;
-            left: -70px;
+            left: -75px;
             height: 100%;
             display: flex;
             flex-direction: column-reverse;
             justify-content: space-between;
-            font-size: 1.2rem;
-            font-weight: 900;
+            font-weight: bold;
+            font-size: 1.3rem;
+            font-family: 'DotGothic16', sans-serif;
             width: 60px;
             text-align: right;
-            color: var(--ink-black);
-            padding-bottom: 5px;
         }
 
         .bar {
             flex: 1;
             margin: 0 8px;
-            border: 3px solid var(--ink-red);
-            background: repeating-linear-gradient(45deg, rgba(139,0,0,0.1), rgba(139,0,0,0.1) 10px, rgba(139,0,0,0.2) 10px, rgba(139,0,0,0.2) 20px);
+            background-color: transparent;
             position: relative;
-            transition: height 0.6s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+            transition: height 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 3px solid var(--marker-red);
+            background: repeating-linear-gradient(
+                45deg,
+                rgba(208, 2, 27, 0.1),
+                rgba(208, 2, 27, 0.1) 10px,
+                rgba(208, 2, 27, 0.2) 10px,
+                rgba(208, 2, 27, 0.2) 20px
+            );
         }
 
         .bar::after {
@@ -210,93 +228,189 @@
             top: -35px;
             left: 50%;
             transform: translateX(-50%);
-            color: var(--ink-red);
-            font-size: 1.6rem;
-            font-weight: 900;
+            color: var(--marker-red);
+            font-size: 1.2rem;
+            font-weight: bold;
+            font-family: 'DotGothic16', sans-serif;
         }
 
         .x-axis-labels {
             display: flex;
             margin-left: 80px;
             margin-right: 40px;
-            margin-top: 10px;
+            margin-top: 25px;
             justify-content: space-around;
             align-items: flex-start;
         }
 
         .name-tag {
-            background: var(--ink-blue);
-            color: #fff;
-            padding: 8px 10px; /* 余白を増やして文字を包む */
-            font-size: 1.2rem;
-            font-weight: 900;
-            text-align: center;
-            min-width: 60px; /* 最小幅を設定 */
-            max-width: 120px; /* あまり広がりすぎないよう上限を設定 */
-            border: 2px solid #000;
-            white-space: normal; /* 折り返しを許可して...を防ぐ */
-            word-break: break-all;
-            line-height: 1.1;
             flex: 1;
-            margin: 0 4px;
-        }
-
-        .motto-panel {
-            margin: 30px 10px;
-            padding: 20px;
-            border: 4px solid var(--ink-black);
-            background: rgba(255,255,255,0.4);
-            position: relative;
-        }
-
-        .motto-panel h4 {
-            position: absolute;
-            top: -18px;
-            left: 20px;
-            background: var(--ink-black);
-            color: #fff;
-            padding: 2px 12px;
-            font-size: 1.2rem;
-        }
-
-        .motto-list {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 5px 20px;
-            font-size: 1.2rem;
-            font-weight: 900;
-        }
-
-        .stamp {
-            position: absolute;
-            width: 140px;
-            height: 140px;
-            border: 6px double var(--ink-red);
-            border-radius: 50%;
+            margin: 0 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--ink-red);
-            font-size: 2.5rem;
-            font-weight: 900;
-            background: rgba(255,255,255,0.7);
-            cursor: move;
-            z-index: 50;
-            user-select: none;
+            background: var(--marker-blue);
+            color: white;
+            padding: 15px 5px;
+            writing-mode: horizontal-tb;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+            border-radius: 4px;
+            position: relative;
+            min-height: 60px;
+            max-width: 120px;
+            word-break: break-all;
+        }
+
+        .name-tag::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 16px;
+            height: 16px;
+            background: #e53e3e;
+            border-radius: 50%;
+            box-shadow: inset -2px -2px 4px rgba(0,0,0,0.3);
+        }
+
+        .motto-panel {
+            margin: 40px 80px;
+            padding: 20px;
+            border: 2px solid var(--marker-black);
+            background: #fff;
+            position: relative;
+            box-shadow: 8px 8px 0 #eee;
+        }
+        .motto-panel h4 {
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: var(--marker-black);
+            color: white;
+            padding: 2px 15px;
+            font-size: 1.2rem;
+        }
+        .motto-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #333;
         }
 
         .controls-panel {
-            margin-top: 20px;
-            padding: 20px;
-            background: #0f172a;
-            border: 2px solid #334155;
-            box-sizing: border-box;
+            margin-top: 40px;
+            padding: 25px;
+            background: #2d3748;
+            border-radius: 12px;
+            color: white;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
         }
 
         .control-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             gap: 15px;
+        }
+
+        .input-group {
+            background: #4a5568;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #718096;
+            position: relative;
+        }
+
+        .quota-input-group {
+            background: #2b6cb0;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 2px;
+            right: 5px;
+            color: #fc8181;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 6px;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"] {
+            background: #ffffff;
+            color: #1a1a1a;
+        }
+
+        input[type="number"] {
+            background: #edf2f7;
+            color: var(--marker-red);
+        }
+
+        .add-member-btn {
+            background: var(--marker-blue);
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+            transition: opacity 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed rgba(255,255,255,0.3);
+        }
+
+        .add-member-btn:hover {
+            opacity: 0.8;
+        }
+
+        /* スタンプのドラッグ対応 */
+        .stamps {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .stamp {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border: 5px solid var(--marker-red);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--marker-red);
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: rgba(255,255,255,0.4);
+            pointer-events: auto; /* ドラッグ可能に */
+            cursor: move;
+            user-select: none;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
         }
     </style>
 </head>
@@ -305,36 +419,33 @@
     <div class="whiteboard-frame">
         <div class="whiteboard-surface" id="wb-surface">
             <div class="header-grid">
-                <div class="flex flex-col gap-4">
-                    <div class="highlight-box">
-                        <span class="text-lg font-black">全体目標</span>
-                        <span id="quota-display" class="text-4xl text-red-800 font-black">350</span>
+                <div class="info-panel">
+                    <div class="info-box">
+                        全体目標ノルマ: <span id="quota-display">350</span>
                     </div>
-                    <div class="highlight-box total-display">
-                        <span class="text-lg font-black">現在の戦績</span>
+                    <div class="total-display">
+                        総売上累計<br>
                         <span id="total-sales">0</span>
                     </div>
                 </div>
 
                 <div class="title-container">
                     <button id="voice-trigger" class="voice-button" onclick="playMotto()">
-                        📢 全員起立！唱和ッ！！
+                        <span>📢</span> 格言を聞く
                     </button>
-                    <div class="mb-1">
-                        <span class="main-brand">「BuddyNote」</span><br>
-                        <span class="sub-title">全国制覇・死守完遂月間</span>
+                    <div class="header-title">
+                        <span>「BuddyNote」</span><br>
+                        <span>全国制覇・強化月間</span>
                     </div>
-                    <div class="kiai-slogan-container">
-                        <div class="kiai-slogan">気合！根性！</div>
-                        <div class="kiai-slogan second-row">製品愛！！</div>
+                    <div class="motivation-text">
+                        気合、友情、製品愛で売り切れ！
                     </div>
                 </div>
 
-                <div class="highlight-box deadline-box">
-                    <div class="text-xl font-black mb-1">決戦まで</div>
-                    <div class="text-lg font-black">残り</div>
-                    <div>
-                        <span id="days-left">--</span><span class="text-2xl ml-1">日</span>
+                <div class="deadline-box">
+                    <div class="label">六月三十日 決戦まで</div>
+                    <div class="days-count">
+                        残り <span id="days-left">--</span> <span class="unit">日</span>
                     </div>
                 </div>
             </div>
@@ -342,215 +453,355 @@
             <div class="graph-area">
                 <div class="graph-container">
                     <div class="y-axis-labels" id="y-labels"></div>
-                    <div id="bars-wrapper" class="flex items-end w-full h-full px-2"></div>
+                    <div id="bars-wrapper" class="flex items-end w-full h-full px-4"></div>
                 </div>
             </div>
 
             <div class="x-axis-labels" id="names-wrapper"></div>
 
             <div class="motto-panel">
-                <h4>昭和魂・営業指針（絶叫唱和）</h4>
+                <h4>今月の指針</h4>
                 <div class="motto-list">
-                    <div>・実力の差は努力の差！</div>
-                    <div>・実績の差は責任感の差！</div>
-                    <div>・人格の差は苦労の差！</div>
-                    <div>・判断力の差は情報の差！</div>
-                    <div>・真剣だと知恵が出る！</div>
-                    <div>・中途半端だと愚痴が出る！</div>
-                    <div>・いい加減だと言い訳ばかり！</div>
-                    <div>・本気でするから大抵ことはできる！</div>
-                    <div>・本気でするから何でも面白い！</div>
-                    <div>・本気でしているから助けがある！</div>
+                    <div>実力の差は努力の差</div>
+                    <div>実績の差は責任感の差</div>
+                    <div>人格の差は苦労の差</div>
+                    <div>判断力の差は情報の差</div>
+                    <div>真剣だと知恵が出る</div>
+                    <div>中途半端だと愚痴が出る</div>
+                    <div>いい加減だと言い訳ばかり</div>
+                    <div>本気でするから大抵ことはできる</div>
+                    <div>本気でするから何でも面白い</div>
+                    <div>本気でしているから誰かが助けてくれる</div>
                 </div>
             </div>
 
-            <div id="stamps-layer"></div>
+            <!-- 移動可能なスタンプ -->
+            <div class="stamps">
+                <div class="stamp draggable-stamp" style="bottom: 60px; right: 180px; transform: rotate(-15deg);">極秘</div>
+                <div class="stamp draggable-stamp" style="bottom: 60px; right: 50px; border-color: var(--marker-blue); color: var(--marker-blue); transform: rotate(10deg);">必達</div>
+            </div>
         </div>
 
-        <div class="controls-panel text-white">
-            <h3 class="text-2xl font-black mb-6 border-l-8 border-red-700 pl-4 uppercase">実績入力・作戦司令部</h3>
-            <div class="bg-red-900/20 p-4 rounded mb-6 flex items-center gap-4 border border-red-800">
-                <label class="font-black text-lg">目標設定：</label>
-                <input type="number" id="quota-input" class="w-32 text-black p-1 text-xl font-bold" oninput="updateTotalQuota(this.value)">
+        <div class="controls-panel">
+            <h3 class="mb-5 border-b-2 border-gray-600 pb-2 font-bold text-xl flex items-center">
+                <span class="mr-2">📊</span> 現場指揮官用 実績入力パネル
+            </h3>
+            
+            <div class="quota-input-group">
+                <label class="font-bold">全体目標ノルマ設定:</label>
+                <input type="number" id="quota-input" style="width: 120px; margin-bottom:0;" oninput="updateTotalQuota(this.value)">
             </div>
+
             <div class="control-grid" id="inputs-container"></div>
         </div>
     </div>
 
     <script>
-        const MOTTO_PHRASES = [
-            "気合！根性！",
-            "製品愛！！",
-            "実力の差は、努力の差ァ！！",
-            "実績の差は、責任感の差ァ！！",
-            "人格の差は、苦労の差ァ！！",
-            "判断力の差は、情報の差ァ！！",
-            "真剣だと、知恵が出るゥ！！",
-            "中途半端だと、愚痴が出るゥ！！",
-            "いい加減だと、言い訳ばかりィ！！",
-            "本気でするから、大抵ことはできるゥ！！",
-            "本気でするから、何でも面白いィ！！",
-            "本気でしているから、誰かが助けてくれるゥ！！"
+        // --- 設定 ---
+        const apiKey = "";
+        const MOTTO_TEXT = `
+            力強く、昭和の熱血漢のような声で音読してください：
+            実力の差は努力の差
+            実績の差は責任感の差
+            人格の差は苦労の差
+            判断力の差は情報の差
+            真剣だと知恵が出る
+            中途半端だと愚痴が出る
+            いい加減だと言い訳ばかり
+            本気でするから大抵ことはできる
+            本気でするから何でも面白い
+            本気でしているから誰かが助けてくれる
+        `;
+
+        // --- データ管理 ---
+        const INITIAL_MEMBERS = [
+            { name: "EC", sales: 1 },
+            { name: "萩原", sales: 0 },
+            { name: "鈴木", sales: 0 },
+            { name: "佐藤", sales: 0 },
+            { name: "部長", sales: 0 },
+            { name: "杉浦", sales: 0 },
+            { name: "新人", sales: 0 },
+            { name: "あまぞん", sales: 0 }
         ];
 
         let state = {
             totalQuota: 350,
-            members: [
-                { name: "EC", sales: 120 },
-                { name: "萩原", sales: 85 },
-                { name: "鈴木", sales: 45 },
-                { name: "佐藤", sales: 30 },
-                { name: "部長", sales: 15 },
-                { name: "杉浦", sales: 50 },
-                { name: "新人", sales: 5 },
-                { name: "あまぞん", sales: 90 }
-            ],
-            stamps: [
-                { id: 'gokuhi', text: '極秘', color: '#8b0000', top: 220, left: 950, rotate: -15 },
-                { id: 'hisshoku', text: '必達', color: '#001a33', top: 480, left: 1000, rotate: 10 }
-            ]
+            members: [...INITIAL_MEMBERS]
         };
 
-        const STORAGE_KEY = 'buddynote_manvoice_v6';
-        let activeUtterances = [];
+        const STORAGE_KEY = 'buddynote_management_data';
 
         function loadData() {
             const saved = localStorage.getItem(STORAGE_KEY);
             if (saved) {
-                try { state = { ...state, ...JSON.parse(saved) }; } catch (e) {}
+                try {
+                    state = JSON.parse(saved);
+                } catch (e) {
+                    console.error("データの読み込みに失敗しました");
+                }
             }
         }
-        function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 
-        function playMotto() {
-            if (window.speechSynthesis.speaking) {
-                window.speechSynthesis.cancel();
-                activeUtterances = [];
-                resetVoiceButton();
-                return;
-            }
-
-            const btn = document.getElementById('voice-trigger');
-            btn.innerText = "🔥 腹から声を出せッ！！";
-            btn.style.background = "#000";
-
-            const voices = window.speechSynthesis.getVoices();
-            const maleVoice = voices.find(v => v.lang === 'ja-JP' && (v.name.includes('Male') || v.name.includes('Ichiro') || v.name.includes('Google 日本語')));
-
-            let currentIndex = 0;
-            function speakNext() {
-                if (currentIndex >= MOTTO_PHRASES.length) { resetVoiceButton(); return; }
-                const uttr = new SpeechSynthesisUtterance(MOTTO_PHRASES[currentIndex]);
-                uttr.lang = 'ja-JP';
-                if (maleVoice) uttr.voice = maleVoice;
-                
-                uttr.pitch = 0.2; 
-                uttr.rate = 1.7; 
-                
-                uttr.onend = () => { currentIndex++; setTimeout(speakNext, 150); };
-                activeUtterances.push(uttr);
-                window.speechSynthesis.speak(uttr);
-            }
-            speakNext();
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
         }
 
-        window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
+        // --- ドラッグ＆ドロップ機能 ---
+        function initDraggableStamps() {
+            const stamps = document.querySelectorAll('.draggable-stamp');
+            const surface = document.getElementById('wb-surface');
 
-        function resetVoiceButton() {
-            const btn = document.getElementById('voice-trigger');
-            btn.innerText = "📢 全員起立！唱和ッ！！";
-            btn.style.background = "var(--ink-red)";
-        }
-
-        function renderStamps() {
-            const layer = document.getElementById('stamps-layer');
-            layer.innerHTML = '';
-            state.stamps.forEach((s) => {
-                const el = document.createElement('div');
-                el.className = 'stamp';
-                el.innerText = s.text;
-                el.style.borderColor = s.color;
-                el.style.color = s.color;
-                el.style.top = s.top + 'px';
-                el.style.left = s.left + 'px';
-                el.style.transform = `rotate(${s.rotate}deg)`;
-                
+            stamps.forEach(stamp => {
                 let isDragging = false;
-                let startX, startY;
+                let offsetX, offsetY;
 
-                const start = (e) => {
+                const startDragging = (e) => {
                     isDragging = true;
-                    const cX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
-                    const cY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
-                    startX = cX - s.left;
-                    startY = cY - s.top;
-                    el.style.zIndex = 1000;
+                    const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+                    const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+                    
+                    const rect = stamp.getBoundingClientRect();
+                    offsetX = clientX - rect.left;
+                    offsetY = clientY - rect.top;
+                    stamp.style.zIndex = 100;
                 };
-                const move = (e) => {
+
+                const stopDragging = () => {
+                    isDragging = false;
+                    stamp.style.zIndex = 10;
+                };
+
+                const moveDragging = (e) => {
                     if (!isDragging) return;
                     e.preventDefault();
-                    const cX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
-                    const cY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
-                    s.left = cX - startX;
-                    s.top = cY - startY;
-                    el.style.left = s.left + 'px';
-                    el.style.top = s.top + 'px';
-                };
-                const stop = () => { if (isDragging) { isDragging = false; el.style.zIndex = 50; saveData(); } };
 
-                el.addEventListener('mousedown', start);
-                el.addEventListener('touchstart', start, { passive: false });
-                window.addEventListener('mousemove', move);
-                window.addEventListener('touchmove', move, { passive: false });
-                window.addEventListener('mouseup', stop);
-                window.addEventListener('touchend', stop);
-                layer.appendChild(el);
+                    const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+                    const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+
+                    const surfaceRect = surface.getBoundingClientRect();
+                    let left = clientX - surfaceRect.left - offsetX;
+                    let top = clientY - surfaceRect.top - offsetY;
+
+                    // 範囲制限
+                    left = Math.max(0, Math.min(left, surfaceRect.width - stamp.offsetWidth));
+                    top = Math.max(0, Math.min(top, surfaceRect.height - stamp.offsetHeight));
+
+                    stamp.style.left = `${left}px`;
+                    stamp.style.top = `${top}px`;
+                    stamp.style.bottom = 'auto';
+                    stamp.style.right = 'auto';
+                };
+
+                stamp.addEventListener('mousedown', startDragging);
+                window.addEventListener('mousemove', moveDragging);
+                window.addEventListener('mouseup', stopDragging);
+
+                stamp.addEventListener('touchstart', startDragging, { passive: false });
+                window.addEventListener('touchmove', moveDragging, { passive: false });
+                window.addEventListener('touchend', stopDragging);
             });
         }
 
-        function renderBoard(rebuildInputs = true) {
-            const highestSales = Math.max(...state.members.map(m => m.sales), 100);
-            const currentMax = Math.ceil((highestSales + 50) / 100) * 100;
-            
+        // --- 音声再生ロジック ---
+        async function playMotto() {
+            const btn = document.getElementById('voice-trigger');
+            if (btn.classList.contains('loading')) return;
+
+            btn.classList.add('loading');
+            btn.innerText = "📣 準備中...";
+
+            try {
+                const audioData = await fetchTTS(MOTTO_TEXT);
+                const audioBlob = pcmToWav(audioData, 24000);
+                const audioUrl = URL.createObjectURL(audioBlob);
+                const audio = new Audio(audioUrl);
+                
+                audio.onplay = () => {
+                    btn.innerText = "🔥 喝！！";
+                };
+                audio.onended = () => {
+                    btn.classList.remove('loading');
+                    btn.innerText = "📢 格言を聞く";
+                };
+                
+                await audio.play();
+            } catch (err) {
+                console.error(err);
+                btn.innerText = "❌ 再生失敗";
+                setTimeout(() => {
+                    btn.classList.remove('loading');
+                    btn.innerText = "📢 格言を聞く";
+                }, 2000);
+            }
+        }
+
+        async function fetchTTS(text, retries = 5) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+            const payload = {
+                contents: [{ parts: [{ text }] }],
+                generationConfig: {
+                    responseModalities: ["AUDIO"],
+                    speechConfig: {
+                        voiceConfig: {
+                            prebuiltVoiceConfig: {
+                                voiceName: "Kore"
+                            }
+                        }
+                    }
+                }
+            };
+
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (!response.ok) throw new Error('API Error');
+                    const result = await response.json();
+                    return result.candidates[0].content.parts[0].inlineData.data;
+                } catch (err) {
+                    if (i === retries - 1) throw err;
+                    await new Promise(r => setTimeout(r, Math.pow(2, i) * 1000));
+                }
+            }
+        }
+
+        function pcmToWav(base64Pcm, sampleRate) {
+            const pcmData = Uint8Array.from(atob(base64Pcm), c => c.charCodeAt(0)).buffer;
+            const wavHeader = new ArrayBuffer(44);
+            const view = new DataView(wavHeader);
+
+            const writeString = (offset, string) => {
+                for (let i = 0; i < string.length; i++) {
+                    view.setUint8(offset + i, string.charCodeAt(i));
+                }
+            };
+
+            writeString(0, 'RIFF');
+            view.setUint32(4, 36 + pcmData.byteLength, true);
+            writeString(8, 'WAVE');
+            writeString(12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, 1, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * 2, true);
+            view.setUint16(32, 2, true);
+            view.setUint16(34, 16, true);
+            writeString(36, 'data');
+            view.setUint32(40, pcmData.byteLength, true);
+
+            return new Blob([wavHeader, pcmData], { type: 'audio/wav' });
+        }
+
+        // --- 操作関数 ---
+        function updateTotalQuota(val) {
+            state.totalQuota = parseInt(val) || 0;
+            saveData();
+            renderBoard(false);
+        }
+
+        function updateMemberName(index, name) {
+            state.members[index].name = name;
+            saveData();
+            renderBoard(false);
+        }
+
+        function updateMemberSales(index, sales) {
+            state.members[index].sales = parseInt(sales) || 0;
+            saveData();
+            renderBoard(false);
+        }
+
+        function addMember() {
+            state.members.push({ name: "新規担当", sales: 0 });
+            saveData();
+            renderBoard(true); 
+        }
+
+        function deleteMember(index) {
+            if (state.members.length <= 1) return;
+            state.members.splice(index, 1);
+            saveData();
+            renderBoard(true);
+        }
+
+        // --- 描画関数 ---
+        function updateCountdown() {
+            const now = new Date();
+            let deadline = new Date(now.getFullYear(), 5, 30, 23, 59, 59);
+            if (now > deadline) deadline.setFullYear(now.getFullYear() + 1);
+            const diff = deadline - now;
+            const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+            document.getElementById('days-left').innerText = days;
+        }
+
+        function getDynamicMax() {
+            const highestSales = Math.max(...state.members.map(m => m.sales), 0);
+            const initialMax = 100;
+            if (highestSales >= initialMax) {
+                return Math.ceil((highestSales + 20) / 50) * 50;
+            }
+            return initialMax;
+        }
+
+        function renderYAxis(currentMax) {
             const yContainer = document.getElementById('y-labels');
             yContainer.innerHTML = '';
-            for (let i = 0; i <= 5; i++) {
+            const steps = 5;
+            for (let i = 0; i <= steps; i++) {
                 const span = document.createElement('span');
-                span.innerText = Math.round((currentMax / 5) * i);
+                span.innerText = Math.round((currentMax / steps) * i);
                 yContainer.appendChild(span);
             }
+        }
+
+        function renderBoard(rebuildInputs = true) {
+            const currentMax = getDynamicMax();
+            renderYAxis(currentMax);
             
             const barsWrapper = document.getElementById('bars-wrapper');
             const namesWrapper = document.getElementById('names-wrapper');
             const inputsContainer = document.getElementById('inputs-container');
-            
+            const totalDisplay = document.getElementById('total-sales');
+            const quotaDisplay = document.getElementById('quota-display');
+            const quotaInput = document.getElementById('quota-input');
+
             barsWrapper.innerHTML = '';
             namesWrapper.innerHTML = '';
-            if (rebuildInputs) inputsContainer.innerHTML = '';
+            let currentTotal = 0;
             
-            let total = 0;
-            document.getElementById('quota-display').innerText = state.totalQuota;
+            quotaDisplay.innerText = state.totalQuota;
+            quotaInput.value = state.totalQuota;
 
-            state.members.forEach((m, i) => {
-                total += m.sales;
+            if (rebuildInputs) inputsContainer.innerHTML = '';
+
+            state.members.forEach((member, i) => {
+                currentTotal += member.sales;
+
                 const bar = document.createElement('div');
                 bar.className = 'bar';
-                bar.style.height = `${(m.sales / currentMax) * 100}%`;
-                bar.setAttribute('data-value', m.sales);
+                const heightPercent = (member.sales / currentMax) * 100;
+                bar.style.height = `${Math.min(heightPercent, 100)}%`;
+                bar.setAttribute('data-value', member.sales);
                 barsWrapper.appendChild(bar);
 
                 const tag = document.createElement('div');
                 tag.className = 'name-tag';
-                tag.innerText = m.name;
+                tag.innerText = member.name;
                 namesWrapper.appendChild(tag);
 
                 if (rebuildInputs) {
                     const group = document.createElement('div');
-                    group.className = 'bg-slate-800 p-3 border border-slate-600 relative';
+                    group.className = 'input-group';
                     group.innerHTML = `
-                        <span class="absolute top-1 right-2 text-red-500 cursor-pointer font-black text-lg" onclick="deleteMember(${i})">✕</span>
-                        <input type="text" class="w-full mb-1 p-1 text-black font-bold" value="${m.name}" oninput="updateMemberName(${i}, this.value)">
-                        <input type="number" class="w-full p-1 text-red-800 font-bold text-xl" value="${m.sales}" oninput="updateMemberSales(${i}, this.value)">
+                        <span class="delete-btn" onclick="deleteMember(${i})">✕ 削除</span>
+                        <label>担当者 ${i+1}</label>
+                        <input type="text" value="${member.name}" oninput="updateMemberName(${i}, this.value)">
+                        <input type="number" value="${member.sales}" oninput="updateMemberSales(${i}, this.value)">
                     `;
                     inputsContainer.appendChild(group);
                 }
@@ -558,32 +809,21 @@
 
             if (rebuildInputs) {
                 const addBtn = document.createElement('div');
-                addBtn.className = 'bg-red-800 p-4 border-2 border-white text-center cursor-pointer font-black hover:bg-red-700 flex items-center justify-center';
-                addBtn.innerHTML = '＋ 兵員追加';
+                addBtn.className = 'add-member-btn';
+                addBtn.innerHTML = '＋ 担当者を追加';
                 addBtn.onclick = addMember;
                 inputsContainer.appendChild(addBtn);
             }
-            document.getElementById('total-sales').innerText = total;
-        }
 
-        function updateTotalQuota(v) { state.totalQuota = parseInt(v) || 0; saveData(); renderBoard(false); }
-        function updateMemberName(i, v) { state.members[i].name = v; saveData(); renderBoard(false); }
-        function updateMemberSales(i, v) { state.members[i].sales = parseInt(v) || 0; saveData(); renderBoard(false); }
-        function addMember() { state.members.push({ name: "新兵", sales: 0 }); saveData(); renderBoard(true); }
-        function deleteMember(i) { state.members.splice(i, 1); saveData(); renderBoard(true); }
-        
-        function updateCountdown() {
-            const now = new Date();
-            let deadline = new Date(now.getFullYear(), 5, 30, 23, 59, 59);
-            const days = Math.ceil((deadline - now) / (1000 * 60 * 60 * 24));
-            document.getElementById('days-left').innerText = days > 0 ? days : 0;
+            totalDisplay.innerText = currentTotal + " 個";
         }
 
         window.onload = () => {
             loadData();
             updateCountdown();
             renderBoard(true);
-            renderStamps();
+            initDraggableStamps(); // ドラッグ機能の初期化
+            setInterval(updateCountdown, 60000);
         };
     </script>
 </body>
